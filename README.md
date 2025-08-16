@@ -176,8 +176,3 @@ npm test
 
 ---
 
-## 📞 Contact
-
-**Developed by:** Global Next Consulting India Pvt. Ltd. (GNCIPL)  
-🌐 Website: [www.gncipl.com](http://www.gncipl.com)  
-👨‍💻 Contact Person: Ravi Kant (Technical Head)  
