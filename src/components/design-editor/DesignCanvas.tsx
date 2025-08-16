@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { Canvas as FabricCanvas, Circle, Rect, Textbox, PencilBrush } from "fabric";
+import { Canvas as FabricCanvas, Circle, Rect, Textbox, PencilBrush, Triangle, Line, Path } from "fabric";
 import { toast } from "sonner";
 
 interface DesignCanvasProps {
   activeColor: string;
-  activeTool: "select" | "draw" | "rectangle" | "circle" | "text";
+  activeTool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow";
+  brushSize: number;
 }
 
-export const DesignCanvas = ({ activeColor, activeTool }: DesignCanvasProps) => {
+export const DesignCanvas = ({ activeColor, activeTool, brushSize }: DesignCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
 
@@ -25,7 +26,7 @@ export const DesignCanvas = ({ activeColor, activeTool }: DesignCanvasProps) => 
       canvas.freeDrawingBrush = new PencilBrush(canvas);
     }
     canvas.freeDrawingBrush.color = activeColor;
-    canvas.freeDrawingBrush.width = 2;
+    canvas.freeDrawingBrush.width = brushSize;
 
     setFabricCanvas(canvas);
     toast.success("Canvas ready! Start designing!");
@@ -45,7 +46,7 @@ export const DesignCanvas = ({ activeColor, activeTool }: DesignCanvasProps) => 
         fabricCanvas.freeDrawingBrush = new PencilBrush(fabricCanvas);
       }
       fabricCanvas.freeDrawingBrush.color = activeColor;
-      fabricCanvas.freeDrawingBrush.width = 2;
+      fabricCanvas.freeDrawingBrush.width = brushSize;
     }
 
     if (activeTool === "rectangle") {
@@ -77,8 +78,35 @@ export const DesignCanvas = ({ activeColor, activeTool }: DesignCanvasProps) => 
         width: 200,
       });
       fabricCanvas.add(text);
+    } else if (activeTool === "triangle") {
+      const triangle = new Triangle({
+        left: 100,
+        top: 100,
+        fill: activeColor,
+        width: 100,
+        height: 100,
+      });
+      fabricCanvas.add(triangle);
+    } else if (activeTool === "line") {
+      const line = new Line([50, 100, 200, 100], {
+        left: 100,
+        top: 100,
+        stroke: activeColor,
+        strokeWidth: brushSize,
+      });
+      fabricCanvas.add(line);
+    } else if (activeTool === "arrow") {
+      const arrowPath = "M 0 0 L 100 50 L 0 100 L 20 50 z";
+      const arrow = new Path(arrowPath, {
+        left: 100,
+        top: 100,
+        fill: activeColor,
+        scaleX: 0.8,
+        scaleY: 0.8,
+      });
+      fabricCanvas.add(arrow);
     }
-  }, [activeTool, activeColor, fabricCanvas]);
+  }, [activeTool, activeColor, fabricCanvas, brushSize]);
 
   const exportToPNG = () => {
     if (!fabricCanvas) return;
@@ -105,6 +133,29 @@ export const DesignCanvas = ({ activeColor, activeTool }: DesignCanvasProps) => 
     toast.success("Canvas cleared!");
   };
 
+  const undoCanvas = () => {
+    if (!fabricCanvas) return;
+    const state = JSON.stringify(fabricCanvas.toJSON());
+    // Simple undo - in production you'd want a proper history stack
+    toast.success("Undo functionality - implement with history stack!");
+  };
+
+  const redoCanvas = () => {
+    if (!fabricCanvas) return;
+    // Simple redo - in production you'd want a proper history stack
+    toast.success("Redo functionality - implement with history stack!");
+  };
+
+  const deleteSelected = () => {
+    if (!fabricCanvas) return;
+    const activeObjects = fabricCanvas.getActiveObjects();
+    if (activeObjects.length) {
+      fabricCanvas.remove(...activeObjects);
+      fabricCanvas.discardActiveObject();
+      toast.success("Selected objects deleted!");
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 flex items-center justify-center bg-canvas-bg p-8">
@@ -126,6 +177,27 @@ export const DesignCanvas = ({ activeColor, activeTool }: DesignCanvasProps) => 
           className="hidden"
         >
           Clear
+        </button>
+        <button 
+          onClick={undoCanvas}
+          data-undo
+          className="hidden"
+        >
+          Undo
+        </button>
+        <button 
+          onClick={redoCanvas}
+          data-redo
+          className="hidden"
+        >
+          Redo
+        </button>
+        <button 
+          onClick={deleteSelected}
+          data-delete
+          className="hidden"
+        >
+          Delete
         </button>
       </div>
     </div>

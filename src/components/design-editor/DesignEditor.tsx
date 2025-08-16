@@ -5,9 +5,10 @@ import { Sidebar } from "./Sidebar";
 
 export const DesignEditor = () => {
   const [activeColor, setActiveColor] = useState("#3b82f6");
-  const [activeTool, setActiveTool] = useState<"select" | "draw" | "rectangle" | "circle" | "text">("select");
+  const [activeTool, setActiveTool] = useState<"select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow">("select");
+  const [brushSize, setBrushSize] = useState(2);
 
-  const handleToolClick = (tool: "select" | "draw" | "rectangle" | "circle" | "text") => {
+  const handleToolClick = (tool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow") => {
     setActiveTool(tool);
   };
 
@@ -21,6 +22,21 @@ export const DesignEditor = () => {
     clearButton?.click();
   };
 
+  const handleUndo = () => {
+    const undoButton = document.querySelector('[data-undo]') as HTMLButtonElement;
+    undoButton?.click();
+  };
+
+  const handleRedo = () => {
+    const redoButton = document.querySelector('[data-redo]') as HTMLButtonElement;
+    redoButton?.click();
+  };
+
+  const handleDelete = () => {
+    const deleteButton = document.querySelector('[data-delete]') as HTMLButtonElement;
+    deleteButton?.click();
+  };
+
   return (
     <div className="h-screen flex flex-col bg-background">
       <Toolbar 
@@ -28,6 +44,9 @@ export const DesignEditor = () => {
         onToolClick={handleToolClick}
         onExport={handleExport}
         onClear={handleClear}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+        onDelete={handleDelete}
       />
       
       <div className="flex-1 flex overflow-hidden">
@@ -35,6 +54,7 @@ export const DesignEditor = () => {
           <DesignCanvas 
             activeColor={activeColor}
             activeTool={activeTool}
+            brushSize={brushSize}
           />
         </div>
         
@@ -42,6 +62,8 @@ export const DesignEditor = () => {
           activeColor={activeColor}
           onColorChange={setActiveColor}
           onToolSelect={handleToolClick}
+          brushSize={brushSize}
+          onBrushSizeChange={setBrushSize}
         />
       </div>
     </div>

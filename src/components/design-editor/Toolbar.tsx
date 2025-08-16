@@ -10,24 +10,33 @@ import {
   Trash2, 
   Undo2, 
   Redo2,
-  Save
+  Save,
+  Triangle,
+  Minus,
+  ArrowRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ToolbarProps {
-  activeTool: "select" | "draw" | "rectangle" | "circle" | "text";
-  onToolClick: (tool: "select" | "draw" | "rectangle" | "circle" | "text") => void;
+  activeTool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow";
+  onToolClick: (tool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow") => void;
   onExport: () => void;
   onClear: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  onDelete: () => void;
 }
 
-export const Toolbar = ({ activeTool, onToolClick, onExport, onClear }: ToolbarProps) => {
+export const Toolbar = ({ activeTool, onToolClick, onExport, onClear, onUndo, onRedo, onDelete }: ToolbarProps) => {
   const tools = [
     { id: "select" as const, icon: MousePointer2, label: "Select" },
     { id: "draw" as const, icon: Pencil, label: "Draw" },
     { id: "rectangle" as const, icon: Square, label: "Rectangle" },
     { id: "circle" as const, icon: Circle, label: "Circle" },
-    { id: "type" as const, icon: Type, label: "Text" },
+    { id: "triangle" as const, icon: Triangle, label: "Triangle" },
+    { id: "line" as const, icon: Minus, label: "Line" },
+    { id: "arrow" as const, icon: ArrowRight, label: "Arrow" },
+    { id: "text" as const, icon: Type, label: "Text" },
   ];
 
   return (
@@ -36,10 +45,10 @@ export const Toolbar = ({ activeTool, onToolClick, onExport, onClear }: ToolbarP
         <Button variant="ghost" size="sm">
           <Save className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="sm">
+        <Button variant="ghost" size="sm" onClick={onUndo}>
           <Undo2 className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="sm">
+        <Button variant="ghost" size="sm" onClick={onRedo}>
           <Redo2 className="h-4 w-4" />
         </Button>
       </div>
@@ -49,14 +58,14 @@ export const Toolbar = ({ activeTool, onToolClick, onExport, onClear }: ToolbarP
       <div className="flex items-center gap-1">
         {tools.map((tool) => {
           const Icon = tool.icon;
-          const isActive = activeTool === tool.id || (tool.id === "type" && activeTool === "text");
+          const isActive = activeTool === tool.id;
           
           return (
             <Button
               key={tool.id}
               variant={isActive ? "default" : "ghost"}
               size="sm"
-              onClick={() => onToolClick(tool.id === "type" ? "text" : tool.id)}
+              onClick={() => onToolClick(tool.id)}
               className={cn(
                 "transition-all duration-200",
                 isActive && "bg-gradient-primary shadow-soft"
@@ -71,8 +80,13 @@ export const Toolbar = ({ activeTool, onToolClick, onExport, onClear }: ToolbarP
       <Separator orientation="vertical" className="h-6" />
       
       <div className="flex items-center gap-1 ml-auto">
+        <Button variant="ghost" size="sm" onClick={onDelete}>
+          <Trash2 className="h-4 w-4 mr-1" />
+          Delete
+        </Button>
         <Button variant="ghost" size="sm" onClick={onClear}>
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4 mr-1" />
+          Clear
         </Button>
         <Button 
           variant="default" 
