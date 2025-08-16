@@ -5,11 +5,16 @@ import { Sidebar } from "./Sidebar";
 
 export const DesignEditor = () => {
   const [activeColor, setActiveColor] = useState("#3b82f6");
-  const [activeTool, setActiveTool] = useState<"select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow">("select");
+  const [activeTool, setActiveTool] = useState<"select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow" | "eraser">("select");
   const [brushSize, setBrushSize] = useState(2);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
 
-  const handleToolClick = (tool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow") => {
+  const handleToolClick = (tool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow" | "eraser") => {
     setActiveTool(tool);
+  };
+
+  const handleImageUpload = (file: File) => {
+    setUploadedImage(file);
   };
 
   const handleExport = () => {
@@ -53,8 +58,9 @@ export const DesignEditor = () => {
         <div className="flex-1">
           <DesignCanvas 
             activeColor={activeColor}
-            activeTool={activeTool}
+            activeTool={activeTool as any}
             brushSize={brushSize}
+            uploadedImage={uploadedImage}
           />
         </div>
         
@@ -64,6 +70,7 @@ export const DesignEditor = () => {
           onToolSelect={handleToolClick}
           brushSize={brushSize}
           onBrushSizeChange={setBrushSize}
+          onImageUpload={handleImageUpload}
         />
       </div>
     </div>

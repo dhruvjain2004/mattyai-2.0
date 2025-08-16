@@ -13,13 +13,14 @@ import {
   Save,
   Triangle,
   Minus,
-  ArrowRight
+  ArrowRight,
+  Eraser
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ToolbarProps {
-  activeTool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow";
-  onToolClick: (tool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow") => void;
+  activeTool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow" | "eraser";
+  onToolClick: (tool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow" | "eraser") => void;
   onExport: () => void;
   onClear: () => void;
   onUndo: () => void;
@@ -31,6 +32,7 @@ export const Toolbar = ({ activeTool, onToolClick, onExport, onClear, onUndo, on
   const tools = [
     { id: "select" as const, icon: MousePointer2, label: "Select" },
     { id: "draw" as const, icon: Pencil, label: "Draw" },
+    { id: "eraser" as const, icon: Eraser, label: "Eraser" },
     { id: "rectangle" as const, icon: Square, label: "Rectangle" },
     { id: "circle" as const, icon: Circle, label: "Circle" },
     { id: "triangle" as const, icon: Triangle, label: "Triangle" },

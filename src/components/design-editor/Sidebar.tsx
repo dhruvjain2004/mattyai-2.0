@@ -11,19 +11,22 @@ import {
   Triangle,
   Minus,
   ArrowRight,
-  Brush
+  Brush,
+  Eraser
 } from "lucide-react";
 import { ColorPicker } from "./ColorPicker";
+import { useRef } from "react";
 
 interface SidebarProps {
   activeColor: string;
   onColorChange: (color: string) => void;
-  onToolSelect: (tool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow") => void;
+  onToolSelect: (tool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow" | "eraser") => void;
   brushSize: number;
   onBrushSizeChange: (size: number) => void;
+  onImageUpload?: (file: File) => void;
 }
 
-export const Sidebar = ({ activeColor, onColorChange, onToolSelect, brushSize, onBrushSizeChange }: SidebarProps) => {
+export const Sidebar = ({ activeColor, onColorChange, onToolSelect, brushSize, onBrushSizeChange, onImageUpload }: SidebarProps) => {
   const shapes = [
     { name: "Rectangle", tool: "rectangle" as const, icon: "rect" },
     { name: "Circle", tool: "circle" as const, icon: "circle" },
@@ -38,6 +41,21 @@ export const Sidebar = ({ activeColor, onColorChange, onToolSelect, brushSize, o
     { name: "Body Text", size: "16px", weight: "normal" },
     { name: "Caption", size: "12px", weight: "normal" },
   ];
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && onImageUpload) {
+      onImageUpload(file);
+    }
+    // Reset input so same file can be uploaded again
+    e.target.value = "";
+  };
 
   return (
     <div className="w-80 bg-secondary border-l border-border flex flex-col">
@@ -104,6 +122,14 @@ export const Sidebar = ({ activeColor, onColorChange, onToolSelect, brushSize, o
                   >
                     <Brush className="w-6 h-6 text-primary" />
                     <span className="text-xs">Free Draw</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full h-16 flex-col gap-2 hover:bg-accent hover:shadow-soft transition-all mb-4"
+                    onClick={() => onToolSelect("eraser")}
+                  >
+                    <Eraser className="w-6 h-6 text-primary" />
+                    <span className="text-xs">Eraser</span>
                   </Button>
                 </div>
                 
@@ -175,6 +201,7 @@ export const Sidebar = ({ activeColor, onColorChange, onToolSelect, brushSize, o
                   <Button 
                     variant="outline" 
                     className="w-full h-32 border-dashed border-2 hover:bg-accent transition-all"
+                    onClick={handleUploadClick}
                   >
                     <div className="text-center">
                       <Image className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
@@ -183,6 +210,13 @@ export const Sidebar = ({ activeColor, onColorChange, onToolSelect, brushSize, o
                       </div>
                     </div>
                   </Button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                  />
                 </div>
               </div>
             </ScrollArea>
