@@ -1,4 +1,3 @@
-
 # Matty Backend (MERN)
 
 Backend for **Matty – Online Graphic Design Tool**.
@@ -16,10 +15,16 @@ Backend for **Matty – Online Graphic Design Tool**.
 cd matty-backend
 npm install
 cp .env.example .env  # fill values
+# Set CORS_ORIGIN to your frontend URL, e.g. http://localhost:5173
 npm run dev
 ```
 
 Server runs at `http://localhost:5000`.
+
+## Connecting Frontend
+
+- Make sure your frontend API requests use `http://localhost:5000` as the base URL in development.
+- Set `CORS_ORIGIN` in `.env` to match your frontend's origin (e.g., `http://localhost:5173`).
 
 ## API
 
@@ -42,4 +47,4 @@ Server runs at `http://localhost:5000`.
 ## Notes
 - Multer saves uploaded file to `/uploads` temporarily; file is deleted after upload to Cloudinary.
 - Increase `express.json({ limit })` if you expect bigger JSON payloads.
-- Set `CORS_ORIGIN` to your frontend origin in production.
+- Set `CORS_ORIGIN` to your frontend origin in production (e.g., `https://your-frontend.com`).

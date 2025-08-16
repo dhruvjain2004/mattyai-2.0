@@ -4,6 +4,12 @@
 
 **URL**: https://lovable.dev/projects/e8964ab2-80af-44ed-b783-f769a5b6f102
 
+## Connecting to Backend
+
+- Ensure your backend is running at `http://localhost:5000`.
+- Set your frontend API requests to use `http://localhost:5000` as the base URL in development.
+- If using environment variables, set `VITE_API_URL=http://localhost:5000` in a `.env` file.
+
 ## How can I edit this code?
 
 There are several ways of editing your application.
