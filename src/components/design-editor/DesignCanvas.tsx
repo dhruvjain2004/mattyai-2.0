@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Canvas as FabricCanvas, Circle, Rect, Textbox } from "fabric";
+import { Canvas as FabricCanvas, Circle, Rect, Textbox, PencilBrush } from "fabric";
 import { toast } from "sonner";
 
 interface DesignCanvasProps {
@@ -20,7 +20,10 @@ export const DesignCanvas = ({ activeColor, activeTool }: DesignCanvasProps) => 
       backgroundColor: "#ffffff",
     });
 
-    // Initialize the freeDrawingBrush
+    // Initialize the freeDrawingBrush safely (Fabric v6)
+    if (!canvas.freeDrawingBrush) {
+      canvas.freeDrawingBrush = new PencilBrush(canvas);
+    }
     canvas.freeDrawingBrush.color = activeColor;
     canvas.freeDrawingBrush.width = 2;
 
@@ -36,8 +39,11 @@ export const DesignCanvas = ({ activeColor, activeTool }: DesignCanvasProps) => 
     if (!fabricCanvas) return;
 
     fabricCanvas.isDrawingMode = activeTool === "draw";
-    
-    if (activeTool === "draw" && fabricCanvas.freeDrawingBrush) {
+
+    if (activeTool === "draw") {
+      if (!fabricCanvas.freeDrawingBrush) {
+        fabricCanvas.freeDrawingBrush = new PencilBrush(fabricCanvas);
+      }
       fabricCanvas.freeDrawingBrush.color = activeColor;
       fabricCanvas.freeDrawingBrush.width = 2;
     }
