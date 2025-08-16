@@ -1,4 +1,3 @@
-
 import bcrypt from "bcryptjs";
 import { validationResult } from "express-validator";
 import User from "../models/User.js";
@@ -12,10 +11,11 @@ export const registerUser = async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
-    const exists = await User.findOne({ email });
+    const normalizedEmail=email.toLowerCase().trim();
+    const exists = await User.findOne({ email:normalizedEmail });
     if (exists) return res.status(400).json({ message: "Email already in use" });
 
-    const hashed = await bcrypt.hash(password, 10);
+    const hashed = await bcrypt.hash(password, 12);
     const user = await User.create({ username, email, passwordHash: hashed });
 
     res.status(201).json({
@@ -35,7 +35,8 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const normalizedEmail=email.toLowerCase().trim();
+    const user = await User.findOne({ email:normalizedEmail });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     const match = await bcrypt.compare(password, user.passwordHash);
