@@ -22,7 +22,6 @@ export const createDesign = async (req, res) => {
   }
 
   try {
-    // Handle optional thumbnail upload
     let thumbnailUrl = "";
     if (req.file) {
       const upload = await cloudinary.uploader.upload(req.file.path, {
