@@ -1,15 +1,39 @@
 import { useEffect, useRef, useState } from "react";
-import { Canvas as FabricCanvas, Circle, Rect, Textbox, PencilBrush, Triangle, Line, Path, Image as FabricImage } from "fabric";
+import {
+  Canvas as FabricCanvas,
+  Circle,
+  Rect,
+  Textbox,
+  PencilBrush,
+  Triangle,
+  Line,
+  Path,
+  Image as FabricImage,
+} from "fabric";
 import { toast } from "sonner";
 
 interface DesignCanvasProps {
   activeColor: string;
-  activeTool: "select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow" | "eraser";
+  activeTool:
+    | "select"
+    | "draw"
+    | "rectangle"
+    | "circle"
+    | "text"
+    | "triangle"
+    | "line"
+    | "arrow"
+    | "eraser";
   brushSize: number;
   uploadedImage?: File | null;
 }
 
-export const DesignCanvas = ({ activeColor, activeTool, brushSize, uploadedImage }: DesignCanvasProps) => {
+export const DesignCanvas = ({
+  activeColor,
+  activeTool,
+  brushSize,
+  uploadedImage,
+}: DesignCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [history, setHistory] = useState<string[]>([]);
@@ -27,13 +51,13 @@ export const DesignCanvas = ({ activeColor, activeTool, brushSize, uploadedImage
   useEffect(() => {
     if (!fabricCanvas) return;
     const save = () => saveHistory();
-    fabricCanvas.on('object:added', save);
-    fabricCanvas.on('object:modified', save);
-    fabricCanvas.on('object:removed', save);
+    fabricCanvas.on("object:added", save);
+    fabricCanvas.on("object:modified", save);
+    fabricCanvas.on("object:removed", save);
     return () => {
-      fabricCanvas.off('object:added', save);
-      fabricCanvas.off('object:modified', save);
-      fabricCanvas.off('object:removed', save);
+      fabricCanvas.off("object:added", save);
+      fabricCanvas.off("object:modified", save);
+      fabricCanvas.off("object:removed", save);
     };
   }, [fabricCanvas]);
 
@@ -60,7 +84,8 @@ export const DesignCanvas = ({ activeColor, activeTool, brushSize, uploadedImage
 
   useEffect(() => {
     if (!fabricCanvas) return;
-    fabricCanvas.isDrawingMode = activeTool === "draw" || activeTool === "eraser";
+    fabricCanvas.isDrawingMode =
+      activeTool === "draw" || activeTool === "eraser";
     if (activeTool === "draw") {
       if (!fabricCanvas.freeDrawingBrush) {
         fabricCanvas.freeDrawingBrush = new PencilBrush(fabricCanvas);
@@ -71,7 +96,7 @@ export const DesignCanvas = ({ activeColor, activeTool, brushSize, uploadedImage
       if (!fabricCanvas.freeDrawingBrush) {
         fabricCanvas.freeDrawingBrush = new PencilBrush(fabricCanvas);
       }
-      fabricCanvas.freeDrawingBrush.color = '#ffffff';
+      fabricCanvas.freeDrawingBrush.color = "#ffffff";
       fabricCanvas.freeDrawingBrush.width = brushSize;
     }
     if (activeTool === "rectangle") {
@@ -102,7 +127,25 @@ export const DesignCanvas = ({ activeColor, activeTool, brushSize, uploadedImage
         fontFamily: "Inter, sans-serif",
         width: 200,
       });
+      // 👇 Clear placeholder when user starts editing
+      text.on("editing:entered", () => {
+        if (text.text === "Click to edit text") {
+          text.text = "";
+          text.selectAll(); // Auto-select so user can type right away
+          fabricCanvas.renderAll();
+        }
+      });
+
+      // 👇 Restore placeholder if user leaves it empty
+      text.on("editing:exited", () => {
+        if (text.text === "") {
+          text.text = "Click to edit text";
+          fabricCanvas.renderAll();
+        }
+      });
       fabricCanvas.add(text);
+      fabricCanvas.setActiveObject(text);
+      fabricCanvas.requestRenderAll();
     } else if (activeTool === "triangle") {
       const triangle = new Triangle({
         left: 100,
@@ -158,12 +201,12 @@ export const DesignCanvas = ({ activeColor, activeTool, brushSize, uploadedImage
   const exportToPNG = () => {
     if (!fabricCanvas) return;
     const dataURL = fabricCanvas.toDataURL({
-      format: 'png',
+      format: "png",
       quality: 1,
       multiplier: 1,
     });
-    const link = document.createElement('a');
-    link.download = 'design.png';
+    const link = document.createElement("a");
+    link.download = "design.png";
     link.href = dataURL;
     link.click();
     toast.success("Design exported successfully!");
@@ -219,39 +262,19 @@ export const DesignCanvas = ({ activeColor, activeTool, brushSize, uploadedImage
         </div>
       </div>
       <div className="flex items-center justify-center">
-        <button 
-          onClick={exportToPNG}
-          data-export
-          className="hidden"
-        >
+        <button onClick={exportToPNG} data-export className="hidden">
           Export PNG
         </button>
-        <button 
-          onClick={clearCanvas}
-          data-clear
-          className="hidden"
-        >
+        <button onClick={clearCanvas} data-clear className="hidden">
           Clear
         </button>
-        <button 
-          onClick={undoCanvas}
-          data-undo
-          className="hidden"
-        >
+        <button onClick={undoCanvas} data-undo className="hidden">
           Undo
         </button>
-        <button 
-          onClick={redoCanvas}
-          data-redo
-          className="hidden"
-        >
+        <button onClick={redoCanvas} data-redo className="hidden">
           Redo
         </button>
-        <button 
-          onClick={deleteSelected}
-          data-delete
-          className="hidden"
-        >
+        <button onClick={deleteSelected} data-delete className="hidden">
           Delete
         </button>
       </div>
