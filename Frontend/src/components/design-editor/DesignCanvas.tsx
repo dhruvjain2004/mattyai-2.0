@@ -1,20 +1,5 @@
-<<<<<<< HEAD
-import { useEffect, useRef, useState } from "react";
-import {
-  Canvas as FabricCanvas,
-  Circle,
-  Rect,
-  Textbox,
-  PencilBrush,
-  Triangle,
-  Line,
-  Path,
-  Image as FabricImage,
-} from "fabric";
-=======
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react";
 import { Canvas as FabricCanvas, Circle, Rect, Textbox, PencilBrush, Triangle, Line, Path, Image as FabricImage } from "fabric";
->>>>>>> frontend
 import { toast } from "sonner";
 
 interface DesignCanvasProps {
@@ -33,19 +18,10 @@ interface DesignCanvasProps {
   uploadedImage?: File | null;
   width?: number;
   height?: number;
-  initialJson?: any;
+  initialJson?: unknown;
 }
 
-<<<<<<< HEAD
-export const DesignCanvas = ({
-  activeColor,
-  activeTool,
-  brushSize,
-  uploadedImage,
-}: DesignCanvasProps) => {
-=======
 export const DesignCanvas = forwardRef(({ activeColor, activeTool, brushSize, uploadedImage, width = 800, height = 600, initialJson }: DesignCanvasProps, ref) => {
->>>>>>> frontend
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [history, setHistory] = useState<string[]>([]);
@@ -386,7 +362,6 @@ export const DesignCanvas = forwardRef(({ activeColor, activeTool, brushSize, up
           <canvas ref={canvasRef} className="max-w-full" />
         </div>
       </div>
-<<<<<<< HEAD
       <div className="flex items-center justify-center">
         <button onClick={exportToPNG} data-export className="hidden">
           Export PNG
@@ -406,9 +381,4 @@ export const DesignCanvas = forwardRef(({ activeColor, activeTool, brushSize, up
       </div>
     </div>
   );
-};
-=======
-    </div>
-  );
 });
->>>>>>> frontend

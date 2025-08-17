@@ -47,7 +47,7 @@ Server runs at `http://localhost:5000`.
 ## Notes
 - Multer saves uploaded file to `/uploads` temporarily; file is deleted after upload to Cloudinary.
 - Increase `express.json({ limit })` if you expect bigger JSON payloads.
-<<<<<<< HEAD
+- Set `CORS_ORIGIN` to your frontend origin in production (e.g., `https://your-frontend.com`).
 - Set `CORS_ORIGIN` to your frontend origin in production (e.g., `https://your-frontend.com`).
 =======
 - Set `CORS_ORIGIN` to your frontend origin in production.
