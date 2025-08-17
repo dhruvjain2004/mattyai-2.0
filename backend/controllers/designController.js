@@ -23,7 +23,14 @@ export const createDesign = async (req, res) => {
 
   try {
     let thumbnailUrl = "";
-    if (req.file) {
+    
+    // Handle thumbnail from base64 data - store directly for now
+    if (req.body.thumbnail && req.body.thumbnail.startsWith('data:image')) {
+      thumbnailUrl = req.body.thumbnail; // Store base64 directly
+      console.log("Storing base64 thumbnail, length:", req.body.thumbnail.length);
+    }
+    // Handle file upload (fallback)
+    else if (req.file) {
       const upload = await cloudinary.uploader.upload(req.file.path, {
         folder: "matty/thumbnails",
         resource_type: "image",
@@ -40,8 +47,11 @@ export const createDesign = async (req, res) => {
       tags: req.body.tags ? req.body.tags.split(",").map(t => t.trim()) : [],
       isPublic: req.body.isPublic === "true",
     });
+    
+    console.log("Design created with thumbnail:", !!doc.thumbnailUrl);
     res.status(201).json(doc);
   } catch (err) {
+    console.error("Create design error:", err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -64,7 +74,13 @@ export const updateDesign = async (req, res) => {
       design.tags = Array.isArray(req.body.tags) ? req.body.tags : req.body.tags.split(",").map(t => t.trim());
     }
 
-    if (req.file) {
+    // Handle thumbnail from base64 data - store directly for now
+    if (req.body.thumbnail && req.body.thumbnail.startsWith('data:image')) {
+      design.thumbnailUrl = req.body.thumbnail; // Store base64 directly
+      console.log("Updating with base64 thumbnail, length:", req.body.thumbnail.length);
+    }
+    // Handle file upload (fallback)
+    else if (req.file) {
       const upload = await cloudinary.uploader.upload(req.file.path, {
         folder: "matty/thumbnails",
         resource_type: "image",
@@ -74,8 +90,10 @@ export const updateDesign = async (req, res) => {
     }
 
     await design.save();
+    console.log("Design updated with thumbnail:", !!design.thumbnailUrl);
     res.json({ message: "Design updated successfully", design });
   } catch (err) {
+    console.error("Update design error:", err);
     res.status(500).json({ message: err.message });
   }
 };
