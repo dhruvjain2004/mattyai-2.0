@@ -26,9 +26,10 @@ interface ToolbarProps {
   onUndo: () => void;
   onRedo: () => void;
   onDelete: () => void;
+  onSave: () => void;
 }
 
-export const Toolbar = ({ activeTool, onToolClick, onExport, onClear, onUndo, onRedo, onDelete }: ToolbarProps) => {
+export const Toolbar = ({ activeTool, onToolClick, onExport, onClear, onUndo, onRedo, onDelete, onSave }: ToolbarProps) => {
   const tools = [
     { id: "select" as const, icon: MousePointer2, label: "Select" },
     { id: "draw" as const, icon: Pencil, label: "Draw" },
@@ -44,8 +45,9 @@ export const Toolbar = ({ activeTool, onToolClick, onExport, onClear, onUndo, on
   return (
     <div className="bg-toolbar-bg border-b border-border px-4 py-2 flex items-center gap-2">
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="sm">
-          <Save className="h-4 w-4" />
+        <Button variant="ghost" size="sm" onClick={onSave}>
+          <Save className="h-4 w-4 mr-1" />
+          Save
         </Button>
         <Button variant="ghost" size="sm" onClick={onUndo}>
           <Undo2 className="h-4 w-4" />

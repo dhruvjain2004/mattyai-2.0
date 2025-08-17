@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useEffect, useRef, useState } from "react";
 import {
   Canvas as FabricCanvas,
@@ -10,6 +11,10 @@ import {
   Path,
   Image as FabricImage,
 } from "fabric";
+=======
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react";
+import { Canvas as FabricCanvas, Circle, Rect, Textbox, PencilBrush, Triangle, Line, Path, Image as FabricImage } from "fabric";
+>>>>>>> frontend
 import { toast } from "sonner";
 
 interface DesignCanvasProps {
@@ -26,18 +31,41 @@ interface DesignCanvasProps {
     | "eraser";
   brushSize: number;
   uploadedImage?: File | null;
+  width?: number;
+  height?: number;
+  initialJson?: any;
 }
 
+<<<<<<< HEAD
 export const DesignCanvas = ({
   activeColor,
   activeTool,
   brushSize,
   uploadedImage,
 }: DesignCanvasProps) => {
+=======
+export const DesignCanvas = forwardRef(({ activeColor, activeTool, brushSize, uploadedImage, width = 800, height = 600, initialJson }: DesignCanvasProps, ref) => {
+>>>>>>> frontend
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [history, setHistory] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
+
+  useImperativeHandle(ref, () => ({
+    getCanvasJSON: () => {
+      if (fabricCanvas) {
+        return JSON.stringify(fabricCanvas.toJSON());
+      }
+      return null;
+    },
+    fabricCanvas,
+    getCanvasRef: () => fabricCanvas, // Debug helper
+    exportToPNG,
+    clearCanvas,
+    undoCanvas,
+    redoCanvas,
+    deleteSelected,
+  }), [fabricCanvas, history, redoStack]);
 
   // Save state to history
   const saveHistory = () => {
@@ -64,8 +92,8 @@ export const DesignCanvas = ({
   useEffect(() => {
     if (!canvasRef.current) return;
     const canvas = new FabricCanvas(canvasRef.current, {
-      width: 800,
-      height: 600,
+      width,
+      height,
       backgroundColor: "#ffffff",
     });
     if (!canvas.freeDrawingBrush) {
@@ -80,7 +108,104 @@ export const DesignCanvas = ({
     return () => {
       canvas.dispose();
     };
-  }, []);
+  }, [width, height]);
+
+  // Handle canvas size changes
+  useEffect(() => {
+    if (!fabricCanvas) return;
+    
+    // Update canvas dimensions
+    fabricCanvas.setDimensions({ width, height });
+    
+    // If we have initial JSON, reload it with new dimensions
+    if (initialJson) {
+      fabricCanvas.loadFromJSON(initialJson, () => {
+        fabricCanvas.renderAll();
+        console.log("Design reloaded with new dimensions");
+      });
+    }
+    
+    fabricCanvas.renderAll();
+  }, [width, height, fabricCanvas, initialJson]);
+
+  // Load initial design when both canvas and JSON are ready
+  useEffect(() => {
+    if (initialJson && fabricCanvas) {
+      console.log("Loading initial design on ready canvas:", initialJson);
+      console.log("Canvas dimensions:", fabricCanvas.width, "x", fabricCanvas.height);
+      
+      // Parse the JSON if it's a string
+      let designData = initialJson;
+      if (typeof initialJson === 'string') {
+        try {
+          designData = JSON.parse(initialJson);
+        } catch (error) {
+          console.error("Failed to parse initial JSON:", error);
+          return;
+        }
+      }
+      
+      console.log("Parsed design data:", designData);
+      
+      fabricCanvas.loadFromJSON(designData, () => {
+        console.log("Design loaded, objects count:", fabricCanvas.getObjects().length);
+        
+        // Center all objects on the canvas
+        const objects = fabricCanvas.getObjects();
+        if (objects.length > 0) {
+          console.log("Objects found:", objects.length);
+          
+          // Calculate the bounding box of all objects
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          
+          objects.forEach((obj, index) => {
+            const objBounds = obj.getBoundingRect();
+            console.log(`Object ${index}:`, obj.type, "at", objBounds.left, objBounds.top, "size:", objBounds.width, "x", objBounds.height);
+            
+            minX = Math.min(minX, objBounds.left);
+            minY = Math.min(minY, objBounds.top);
+            maxX = Math.max(maxX, objBounds.left + objBounds.width);
+            maxY = Math.max(maxY, objBounds.top + objBounds.height);
+          });
+          
+          console.log("Design bounds:", minX, minY, maxX, maxY);
+          
+          // Calculate center offset
+          const canvasCenterX = fabricCanvas.width! / 2;
+          const canvasCenterY = fabricCanvas.height! / 2;
+          const designCenterX = (minX + maxX) / 2;
+          const designCenterY = (minY + maxY) / 2;
+          
+          console.log("Canvas center:", canvasCenterX, canvasCenterY);
+          console.log("Design center:", designCenterX, designCenterY);
+          
+          // Move all objects to center them on canvas
+          const offsetX = canvasCenterX - designCenterX;
+          const offsetY = canvasCenterY - designCenterY;
+          
+          console.log("Offset to apply:", offsetX, offsetY);
+          
+          objects.forEach(obj => {
+            obj.set({
+              left: obj.left! + offsetX,
+              top: obj.top! + offsetY
+            });
+          });
+        } else {
+          console.log("No objects found in design");
+        }
+        
+        // Ensure all objects are visible
+        fabricCanvas.renderAll();
+        
+        console.log("Initial design loaded and rendered");
+        
+        // Save to history after loading
+        setHistory([JSON.stringify(fabricCanvas.toJSON())]);
+        setRedoStack([]);
+      });
+    }
+  }, [initialJson, fabricCanvas]);
 
   useEffect(() => {
     if (!fabricCanvas) return;
@@ -261,6 +386,7 @@ export const DesignCanvas = ({
           <canvas ref={canvasRef} className="max-w-full" />
         </div>
       </div>
+<<<<<<< HEAD
       <div className="flex items-center justify-center">
         <button onClick={exportToPNG} data-export className="hidden">
           Export PNG
@@ -281,3 +407,8 @@ export const DesignCanvas = ({
     </div>
   );
 };
+=======
+    </div>
+  );
+});
+>>>>>>> frontend

@@ -33,9 +33,20 @@ export const createDesign = async (req, res) => {
 
   try {
     let thumbnailUrl = "";
+<<<<<<< HEAD
     let thumbnailPublicId = "";
 
     if (req.file) {
+=======
+    
+    // Handle thumbnail from base64 data - store directly for now
+    if (req.body.thumbnail && req.body.thumbnail.startsWith('data:image')) {
+      thumbnailUrl = req.body.thumbnail; // Store base64 directly
+      console.log("Storing base64 thumbnail, length:", req.body.thumbnail.length);
+    }
+    // Handle file upload (fallback)
+    else if (req.file) {
+>>>>>>> frontend
       const upload = await cloudinary.uploader.upload(req.file.path, {
         folder: "matty/thumbnails",
         resource_type: "image",
@@ -61,10 +72,19 @@ export const createDesign = async (req, res) => {
       tags: req.body.tags ? req.body.tags.split(",").map(t => t.trim()) : [],
       isPublic: req.body.isPublic === "true" || req.body.isPublic === true,
     });
+<<<<<<< HEAD
 
     return res.status(201).json({ success: true, design: doc });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
+=======
+    
+    console.log("Design created with thumbnail:", !!doc.thumbnailUrl);
+    res.status(201).json(doc);
+  } catch (err) {
+    console.error("Create design error:", err);
+    res.status(500).json({ message: err.message });
+>>>>>>> frontend
   }
 };
 
@@ -98,11 +118,21 @@ export const updateDesign = async (req, res) => {
         : req.body.tags.split(",").map(t => t.trim());
     }
 
+<<<<<<< HEAD
     if (req.file) {
       // Delete old thumbnail from Cloudinary if exists
       if (design.thumbnailPublicId) {
         await cloudinary.uploader.destroy(design.thumbnailPublicId);
       }
+=======
+    // Handle thumbnail from base64 data - store directly for now
+    if (req.body.thumbnail && req.body.thumbnail.startsWith('data:image')) {
+      design.thumbnailUrl = req.body.thumbnail; // Store base64 directly
+      console.log("Updating with base64 thumbnail, length:", req.body.thumbnail.length);
+    }
+    // Handle file upload (fallback)
+    else if (req.file) {
+>>>>>>> frontend
       const upload = await cloudinary.uploader.upload(req.file.path, {
         folder: "matty/thumbnails",
         resource_type: "image",
@@ -113,9 +143,17 @@ export const updateDesign = async (req, res) => {
     }
 
     await design.save();
+<<<<<<< HEAD
     return res.json({ success: true, message: "Design updated successfully", design });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
+=======
+    console.log("Design updated with thumbnail:", !!design.thumbnailUrl);
+    res.json({ message: "Design updated successfully", design });
+  } catch (err) {
+    console.error("Update design error:", err);
+    res.status(500).json({ message: err.message });
+>>>>>>> frontend
   }
 };
 export const deleteDesign = async (req, res) => {
