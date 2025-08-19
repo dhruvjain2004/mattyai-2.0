@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "@/lib/utils";
 import { Dialog } from "@/components/ui/dialog";
 
@@ -15,6 +16,7 @@ const MyDesigns = () => {
   const [error, setError] = useState("");
   const [preview, setPreview] = useState<Design | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const loadDesigns = async () => {
     const token = localStorage.getItem("token");
@@ -91,7 +93,7 @@ const MyDesigns = () => {
           Refresh
         </button>
         <button
-          onClick={() => window.location.href = "/canvas"}
+          onClick={() => navigate("/canvas")}
           className="px-4 lg:px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 text-sm lg:text-base self-start sm:self-auto"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
