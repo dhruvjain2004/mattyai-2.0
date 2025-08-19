@@ -24,9 +24,8 @@ connectDB();
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN
-      ? process.env.CORS_ORIGIN.split(",")
-      : ["https://matty-ai-gjaf.onrender.com"],
+    origin: "https://mattyai-2-0-drab.vercel.app", // allow only your frontend
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
