@@ -26,7 +26,7 @@ app.use(
   cors({
     origin: process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(",")
-      : ["http://localhost:5173"],
+      : ["https://matty-ai-gjaf.onrender.com"],
     credentials: true,
   })
 );
