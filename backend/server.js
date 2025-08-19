@@ -22,17 +22,36 @@ connectDB();
 
 // Security & Middleware
 app.use(helmet());
-app.use(
-  cors({
-    origin: [
-      "http://localhost:8080",
-      "http://localhost:5173",
-      "https://mattyai-2-0-drab.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+const defaultAllowedOrigins = [
+  "http://localhost:8080",
+  "http://localhost:5173",
+  "https://mattyai-2-0-drab.vercel.app",
+  "https://mattyai-3-0.vercel.app",
+];
+
+const envAllowedOrigins = (process.env.ALLOWED_ORIGINS || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+const allowedOrigins = [...new Set([...defaultAllowedOrigins, ...envAllowedOrigins])];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const normalizedOrigin = origin.replace(/\/$/, "");
+    const isAllowed = allowedOrigins.some((o) => normalizedOrigin === o.replace(/\/$/, ""));
+    if (isAllowed) return callback(null, true);
+    return callback(new Error(`Not allowed by CORS: ${origin}`));
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(compression());
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));

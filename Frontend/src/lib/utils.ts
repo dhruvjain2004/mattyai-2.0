@@ -13,4 +13,6 @@ export function parseJwt(token: string) {
   }
 }
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+const RAW_API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim() || "http://localhost:5000";
+const NORMALIZED_BASE = RAW_API_BASE.replace(/\/$/, "");
+export const API_BASE_URL = NORMALIZED_BASE.endsWith("/api") ? NORMALIZED_BASE : `${NORMALIZED_BASE}/api`;
