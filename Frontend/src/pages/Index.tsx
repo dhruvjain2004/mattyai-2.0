@@ -64,7 +64,7 @@ const Index = () => {
             {/* Quick Actions */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
               <button
-                onClick={() => window.location.href = "/canvas"}
+                onClick={() => navigate("/canvas")}
                 className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-left group"
               >
                 <div className="text-3xl lg:text-4xl mb-3">🎨</div>

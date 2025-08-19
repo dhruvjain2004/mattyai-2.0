@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "@/lib/utils";
 import { DesignEditor } from "@/components/design-editor/DesignEditor";
 
@@ -8,6 +8,7 @@ const EditDesign = () => {
   const [initialJson, setInitialJson] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -40,7 +41,7 @@ const EditDesign = () => {
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
-            onClick={() => window.location.href = "/canvas"}
+            onClick={() => navigate("/canvas")}
             className="px-3 lg:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm lg:text-base"
           >
             🎨 New Design
