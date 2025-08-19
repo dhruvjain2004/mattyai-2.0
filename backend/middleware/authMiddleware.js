@@ -1,6 +1,5 @@
 
 import jwt from "jsonwebtoken";
-import { success } from "zod/v4";
 
 export const protect = (req, res, next) => {
   const authHeader = req.headers.authorization || "";

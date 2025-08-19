@@ -15,7 +15,7 @@ const EditDesign = () => {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.ok ? res.json() : Promise.reject(res))
-      .then(data => setInitialJson(data.jsonData))
+      .then(data => setInitialJson(data.design ? data.design.jsonData : data.jsonData))
       .catch(() => setError("Failed to load design"))
       .finally(() => setLoading(false));
   }, [id]);

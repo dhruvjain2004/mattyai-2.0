@@ -24,9 +24,12 @@ const MyDesigns = () => {
       });
       if (res.ok) {
         const data = await res.json();
-        console.log("Loaded designs:", data);
-        console.log("First design thumbnailUrl:", data[0]?.thumbnailUrl);
-        setDesigns(data);
+        const designs = Array.isArray(data)
+          ? data
+          : (Array.isArray(data.designs) ? data.designs : []);
+        console.log("Loaded designs:", designs);
+        console.log("First design thumbnailUrl:", designs[0]?.thumbnailUrl);
+        setDesigns(designs);
       } else {
         setError("Failed to load designs");
       }

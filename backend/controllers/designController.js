@@ -52,9 +52,14 @@ export const createDesign = async (req, res) => {
 
     let jsonData = {};
     try {
-      jsonData = JSON.parse(req.body.jsonData || "{}");
+      jsonData =
+        typeof req.body.jsonData === "string"
+          ? JSON.parse(req.body.jsonData || "{}")
+          : (req.body.jsonData || {});
     } catch (e) {
-      return res.status(400).json({ success: false, message: "Invalid design JSON data" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid design JSON data" });
     }
 
     const doc = await Design.create({
