@@ -16,5 +16,5 @@ export default defineConfig({
   build: {
     outDir: "dist", // where Vite outputs build files
   },
-  base: "/", // ensures router works properly
+  base: "./", // ensures router works properly
 });
