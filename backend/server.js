@@ -24,7 +24,7 @@ connectDB();
 app.use(helmet());
 app.use(
   cors({
-    origin: "https://mattyai-2-0-drab.vercel.app", // allow only your frontend
+    origin: "https://mattyai-3-0.vercel.app/", // allow only your frontend
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
