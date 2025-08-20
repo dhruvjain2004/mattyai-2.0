@@ -1,23 +1,32 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Login from "@/pages/Login";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
+  requireAdmin?: boolean;
 }
 
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    let authed = false;
+    let authorized = false;
     if (token) {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
+      authed = true;
+      if (requireAdmin) {
+        const stored = localStorage.getItem("user");
+        const role = stored ? (JSON.parse(stored)?.role as string | undefined) : undefined;
+        authorized = role === "admin";
+      } else {
+        authorized = true;
+      }
     }
+    setIsAuthenticated(authed);
+    setIsAuthorized(authorized);
     setLoading(false);
   }, []);
 
@@ -25,7 +34,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !isAuthorized) {
     return <Login />;
   }
 

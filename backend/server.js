@@ -12,6 +12,7 @@ import mongoose from "mongoose";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import designRoutes from "./routes/designRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
@@ -71,6 +72,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", authRoutes);
 app.use("/api/designs", designRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Static uploads (optional local preview, not for production)
 const __filename = fileURLToPath(import.meta.url);

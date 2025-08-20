@@ -19,7 +19,7 @@ export const registerUser = async (req, res) => {
     const user = await User.create({ username, email, passwordHash: hashed });
 
     res.status(201).json({
-      user: { id: user._id, username: user.username, email: user.email },
+      user: { id: user._id, username: user.username, email: user.email, role: user.role },
       token: generateToken(user._id),
     });
   } catch (err) {
@@ -43,10 +43,21 @@ export const loginUser = async (req, res) => {
     if (!match) return res.status(400).json({ message: "Invalid credentials" });
 
     res.json({
-      user: { id: user._id, username: user.username, email: user.email },
+      user: { id: user._id, username: user.username, email: user.email, role: user.role },
       token: generateToken(user._id),
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).lean();
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    const { _id, username, email, role, createdAt, updatedAt } = user;
+    return res.json({ success: true, user: { id: _id, username, email, role, createdAt, updatedAt } });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
   }
 };

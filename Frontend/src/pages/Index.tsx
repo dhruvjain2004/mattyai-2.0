@@ -72,6 +72,24 @@ const Index = () => {
                 <p className="text-blue-100 text-sm lg:text-base">Start with a blank canvas and let your creativity flow</p>
               </button>
 
+              {(() => {
+                const user = localStorage.getItem("user");
+                const role = user ? (JSON.parse(user)?.role as string | undefined) : undefined;
+                if (role === "admin") {
+                  return (
+                    <button
+                      onClick={() => navigate("/admin")}
+                      className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-left group"
+                    >
+                      <div className="text-3xl lg:text-4xl mb-3">🛠️</div>
+                      <h3 className="text-lg lg:text-xl font-semibold mb-2">Admin Panel</h3>
+                      <p className="text-blue-100 text-sm lg:text-base">Manage users and designs</p>
+                    </button>
+                  );
+                }
+                return null;
+              })()}
+
               <button
                 onClick={() => window.location.href = "/my-designs"}
                 className="bg-gradient-to-r from-green-500 to-teal-600 text-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-left group"

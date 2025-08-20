@@ -11,6 +11,7 @@ import MyDesigns from "./pages/MyDesigns";
 import EditDesign from "./pages/EditDesign";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DesignEditor from "./pages/DesignEditor";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,12 @@ const router = createBrowserRouter(
         </ProtectedRoute>
       )
     },
+    { path: "/admin", element: (
+        <ProtectedRoute requireAdmin>
+          <AdminDashboard />
+        </ProtectedRoute>
+      )
+    },
     { path: "/edit/:id", element: (
         <ProtectedRoute>
           <EditDesign />
@@ -36,7 +43,6 @@ const router = createBrowserRouter(
   ],
   {
     future: {
-      v7_startTransition: true,
       v7_relativeSplatPath: true,
     },
   }
