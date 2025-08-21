@@ -98,9 +98,29 @@ export const DesignEditor = ({ initialJson, designId }: { initialJson?: any; des
     setUploadedImage(file);
   };
 
-  const handleExport = () => {
-    if (canvasRef.current?.exportToPNG) {
-      canvasRef.current.exportToPNG();
+  const handleExport = async () => {
+    if (!canvasRef.current?.exportToPNG) return;
+    const dataUrl = canvasRef.current.exportToPNG();
+    if (!dataUrl) return;
+    try {
+      const token = localStorage.getItem("token");
+      if (!designId) {
+        alert("Please save the design first before exporting.");
+        return;
+      }
+      const res = await fetch(`${API_BASE_URL}/designs/${designId}/export`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ image: dataUrl }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.message || "Export failed");
+      alert("Exported to Cloudinary!\n" + j.url);
+    } catch (e: any) {
+      alert(e.message || "Export failed");
     }
   };
 

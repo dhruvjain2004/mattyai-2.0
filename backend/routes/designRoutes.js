@@ -9,6 +9,7 @@ import {
   updateDesign,
   deleteDesign,
 } from "../controllers/designController.js";
+import { exportDesignImage } from "../controllers/designController.js";
 
 const router = express.Router();
 
@@ -60,6 +61,8 @@ router.put(
 );
 
 router.delete("/:id", protect, deleteDesign);
+
+router.post("/:id/export", protect, [body("image").isString()], validate, exportDesignImage);
 
 export default router;
 

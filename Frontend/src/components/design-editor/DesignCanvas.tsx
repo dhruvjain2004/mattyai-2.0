@@ -306,11 +306,8 @@ export const DesignCanvas = forwardRef(({ activeColor, activeTool, brushSize, up
       quality: 1,
       multiplier: 1,
     });
-    const link = document.createElement("a");
-    link.download = "design.png";
-    link.href = dataURL;
-    link.click();
-    toast.success("Design exported successfully!");
+    // return data URL instead of auto-download; consumer will upload
+    return dataURL;
   };
 
   const clearCanvas = () => {

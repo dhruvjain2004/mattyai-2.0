@@ -34,10 +34,18 @@ export const createDesign = async (req, res) => {
     let thumbnailUrl = "";
     let thumbnailPublicId = "";
 
-    // Handle thumbnail from base64 data - store directly for now
+    // Handle thumbnail from base64 data - upload to Cloudinary
     if (req.body.thumbnail && req.body.thumbnail.startsWith('data:image')) {
-      thumbnailUrl = req.body.thumbnail; // Store base64 directly
-      console.log("Storing base64 thumbnail, length:", req.body.thumbnail.length);
+      try {
+        const upload = await cloudinary.uploader.upload(req.body.thumbnail, {
+          folder: "matty/thumbnails",
+          resource_type: "image",
+        });
+        thumbnailUrl = upload.secure_url;
+        thumbnailPublicId = upload.public_id;
+      } catch (e) {
+        console.error("Cloudinary upload (thumbnail) failed:", e);
+      }
     }
     // Handle file upload (fallback)
     else if (req.file) {
@@ -110,10 +118,21 @@ export const updateDesign = async (req, res) => {
         : req.body.tags.split(",").map(t => t.trim());
     }
 
-    // Handle thumbnail from base64 data - store directly for now
+    // Handle thumbnail from base64 data - upload to Cloudinary
     if (req.body.thumbnail && req.body.thumbnail.startsWith('data:image')) {
-      design.thumbnailUrl = req.body.thumbnail; // Store base64 directly
-      console.log("Updating with base64 thumbnail, length:", req.body.thumbnail.length);
+      try {
+        if (design.thumbnailPublicId) {
+          await cloudinary.uploader.destroy(design.thumbnailPublicId);
+        }
+        const upload = await cloudinary.uploader.upload(req.body.thumbnail, {
+          folder: "matty/thumbnails",
+          resource_type: "image",
+        });
+        design.thumbnailUrl = upload.secure_url;
+        design.thumbnailPublicId = upload.public_id;
+      } catch (e) {
+        console.error("Cloudinary upload (thumbnail) failed:", e);
+      }
     }
     // Handle file upload (fallback)
     else if (req.file) {
@@ -171,9 +190,41 @@ export const deleteDesign = async (req, res) => {
     if (design.thumbnailPublicId) {
       await cloudinary.uploader.destroy(design.thumbnailPublicId);
     }
+    if (design.exportedImagePublicId) {
+      try { await cloudinary.uploader.destroy(design.exportedImagePublicId); } catch {}
+    }
 
     return res.json({ success: true, message: "Design deleted successfully" });
   } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+export const exportDesignImage = async (req, res) => {
+  try {
+    const design = await Design.findOne({ _id: req.params.id, userId: req.user.id });
+    if (!design) {
+      return res.status(404).json({ success: false, message: "Design not found" });
+    }
+    const { image } = req.body;
+    if (!image || typeof image !== 'string' || !image.startsWith('data:image')) {
+      return res.status(400).json({ success: false, message: "Invalid image data" });
+    }
+    // Upload to Cloudinary
+    const upload = await cloudinary.uploader.upload(image, {
+      folder: "matty/exports",
+      resource_type: "image",
+    });
+    // Replace previous export if exists
+    if (design.exportedImagePublicId) {
+      try { await cloudinary.uploader.destroy(design.exportedImagePublicId); } catch {}
+    }
+    design.exportedImageUrl = upload.secure_url;
+    design.exportedImagePublicId = upload.public_id;
+    await design.save();
+    return res.json({ success: true, url: design.exportedImageUrl, publicId: design.exportedImagePublicId });
+  } catch (err) {
+    console.error("Export upload error:", err);
     return res.status(500).json({ success: false, message: err.message });
   }
 };
