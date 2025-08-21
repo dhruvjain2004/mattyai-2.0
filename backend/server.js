@@ -39,10 +39,11 @@ const allowedOrigins = [...new Set([...defaultAllowedOrigins, ...envAllowedOrigi
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
+    if (!origin) return callback(null, true); // non-browser or same-origin
     const normalizedOrigin = origin.replace(/\/$/, "");
-    const isAllowed = allowedOrigins.some((o) => normalizedOrigin === o.replace(/\/$/, ""));
-    if (isAllowed) return callback(null, true);
+    const exactAllowed = allowedOrigins.some((o) => normalizedOrigin === o.replace(/\/$/, ""));
+    const patternAllowed = /https:\/\/.*\.vercel\.app$/.test(normalizedOrigin);
+    if (exactAllowed || patternAllowed) return callback(null, true);
     return callback(new Error(`Not allowed by CORS: ${origin}`));
   },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
