@@ -16,12 +16,10 @@ interface DesignCanvasProps {
     | "eraser";
   brushSize: number;
   uploadedImage?: File | null;
-  width?: number;
-  height?: number;
   initialJson?: unknown;
 }
 
-export const DesignCanvas = forwardRef(({ activeColor, activeTool, brushSize, uploadedImage, width = 800, height = 600, initialJson }: DesignCanvasProps, ref) => {
+export const DesignCanvas = forwardRef(({ activeColor, activeTool, brushSize, uploadedImage, initialJson }: DesignCanvasProps, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [history, setHistory] = useState<string[]>([]);
@@ -68,8 +66,8 @@ export const DesignCanvas = forwardRef(({ activeColor, activeTool, brushSize, up
   useEffect(() => {
     if (!canvasRef.current) return;
     const canvas = new FabricCanvas(canvasRef.current, {
-      width,
-      height,
+      width: 800,
+      height: 600,
       backgroundColor: "#ffffff",
     });
     if (!canvas.freeDrawingBrush) {
@@ -84,25 +82,9 @@ export const DesignCanvas = forwardRef(({ activeColor, activeTool, brushSize, up
     return () => {
       canvas.dispose();
     };
-  }, [width, height]);
+  }, []);
 
-  // Handle canvas size changes
-  useEffect(() => {
-    if (!fabricCanvas) return;
-    
-    // Update canvas dimensions
-    fabricCanvas.setDimensions({ width, height });
-    
-    // If we have initial JSON, reload it with new dimensions
-    if (initialJson) {
-      fabricCanvas.loadFromJSON(initialJson, () => {
-        fabricCanvas.renderAll();
-        console.log("Design reloaded with new dimensions");
-      });
-    }
-    
-    fabricCanvas.renderAll();
-  }, [width, height, fabricCanvas, initialJson]);
+  // Initial JSON load might still need to render
 
   // Load initial design when both canvas and JSON are ready
   useEffect(() => {

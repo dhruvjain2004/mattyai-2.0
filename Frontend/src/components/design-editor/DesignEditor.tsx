@@ -10,8 +10,6 @@ export const DesignEditor = ({ initialJson, designId }: { initialJson?: any; des
   const [activeTool, setActiveTool] = useState<"select" | "draw" | "rectangle" | "circle" | "text" | "triangle" | "line" | "arrow" | "eraser">("select");
   const [brushSize, setBrushSize] = useState(2);
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-  const [canvasWidth, setCanvasWidth] = useState(800);
-  const [canvasHeight, setCanvasHeight] = useState(600);
   const canvasRef = useRef<any>(null);
 
   // Load initial design JSON if provided
@@ -150,42 +148,7 @@ export const DesignEditor = ({ initialJson, designId }: { initialJson?: any; des
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Canvas Size Controls - Mobile Responsive */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-3 lg:p-4 bg-white border-b border-gray-200 shadow-sm gap-3">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 lg:gap-6">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 lg:gap-4">
-            <label className="flex items-center gap-2">
-              <span className="text-gray-700 font-medium text-sm lg:text-base">Width:</span>
-              <input
-                type="number"
-                min={100}
-                max={1920}
-                value={canvasWidth}
-                onChange={e => setCanvasWidth(Number(e.target.value))}
-                className="w-16 lg:w-20 px-2 lg:px-3 py-1 lg:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
-            </label>
-            <label className="flex items-center gap-2">
-              <span className="text-gray-700 font-medium text-sm lg:text-base">Height:</span>
-              <input
-                type="number"
-                min={100}
-                max={1080}
-                value={canvasHeight}
-                onChange={e => setCanvasHeight(Number(e.target.value))}
-                className="w-16 lg:w-20 px-2 lg:px-3 py-1 lg:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
-            </label>
-          </div>
-          <span className="text-gray-500 text-xs lg:text-sm bg-gray-100 px-2 lg:px-3 py-1 lg:py-2 rounded-md">
-            💡 Set canvas size before drawing
-          </span>
-        </div>
-        <div className="flex items-center gap-2 self-end lg:self-auto">
-          <div className="w-2 lg:w-3 h-2 lg:h-3 bg-green-500 rounded-full animate-pulse"></div>
-          <span className="text-xs lg:text-sm text-gray-600">Canvas Ready</span>
-        </div>
-      </div>
+      
       
       {/* Toolbar - Mobile Responsive */}
       <div className="lg:hidden">
@@ -225,8 +188,6 @@ export const DesignEditor = ({ initialJson, designId }: { initialJson?: any; des
             activeTool={activeTool as any}
             brushSize={brushSize}
             uploadedImage={uploadedImage}
-            width={canvasWidth}
-            height={canvasHeight}
             initialJson={initialJson}
           />
         </div>
